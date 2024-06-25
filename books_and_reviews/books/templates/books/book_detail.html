@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ book.title }}</title>
+</head>
+<body>
+    <h1>{{ book.title }}</h1>
+    <p><strong>Author:</strong>{{ book.author.name }}</p>
+    <p><strong>Publication Date:</strong> {{ book.publication_date }}</p>
+    <p><strong>ISBN:</strong> {{ book.ISBN }}</p>
+    <p>{{ book.summary }}</p>
+    <h2>Reviews</h2>
+    <ul>
+        {% for review in book.review_set.all %}
+        <li>
+            <strong>{{ review.reviewer_name }}:</strong>
+            <p>{{ review.review_text }}</p>
+            <p>Rating: {{ review.rating }}</p>
+            <p>Date: {{ review.review_date }}</p>
+        </li>
+        {% endfor %}
+    </ul>
+    {% if isbn_prefix %}
+        <p>for isbn_prefix: {{ isbn_prefix }}</p>
+        <a href="/books/isbn/{{ isbn_prefix }}/">Back to list</a> 
+    {% else %}    
+        <a href="/">Back to list</a>        
+    {% endif %}
+
+</body>
+</html>

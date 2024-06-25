@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Book List</title>
+</head>
+<body>
+    <h1>
+        Book List 
+        {% if isbn_prefix %}
+            for isbn_prefix: {{ isbn_prefix }}
+        {% endif %}
+    </h1>
+    <ul>
+        {% for book in books %}
+        <li><a href="{% url 'book_detail' book.id %}{{ isbn_prefix }}">{{ book.title }}</a></li>
+        {% endfor %}
+    </ul>
+</body>
+</html>
