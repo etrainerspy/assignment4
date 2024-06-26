@@ -13,6 +13,7 @@ class Book(models.Model):
     publication_date = models.DateField()
     ISBN = models.CharField(max_length=13, unique=True)
     summary = models.TextField()
+    content = models.TextField(null=True, blank=True)  # Allows null values and optional content
 
     def __str__(self):
         return self.title

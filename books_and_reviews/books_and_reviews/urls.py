@@ -25,11 +25,13 @@ urlpatterns = [
     path('book/<int:book_id>/', views.book_detail, name='book_detail'),
     path('book/<int:book_id>/<str:isbn_prefix>/', views.book_detail, name='book_detail'),
     path('books/isbn/<str:isbn_prefix>/', views.books_isbn, name='books_isbn'),
-    path('api/book/', views.api_book, name='api_book'),
-    path('api/review/', views.api_review, name='api_review'),    
-    path('show/author/', views.show_author, name='show_author'),    
+    path('show/books/', views.show_books, name='show_books'),
+    path('show/reviews/', views.show_reviews, name='show_reviews'),    
+    path('show/authors/', views.show_authors, name='show_authors'),    
     path('delete/author/', views.delete_author, name='delete_author'),    
     path('add/book/', views.add_book, name='add_book'),    
+    path('add/author/', views.add_author, name='add_author'),    
+    path('add/review/', views.add_review, name='add_review'),
     path('update/book/title', views.update_book_title, name='update_book_title'),    
 ]
 

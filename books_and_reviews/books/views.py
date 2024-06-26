@@ -13,7 +13,7 @@ def book_detail(request, book_id, isbn_prefix=None):
     book = get_object_or_404(Book, pk=book_id)
     return render(request, 'books/book_detail.html', {'book': book, 'isbn_prefix': isbn_prefix})
 
-def api_book(request):
+def show_books(request):
     select_query = "SELECT * FROM books_book INNER JOIN books_author where books_book.author_id = books_author.id"
     with connection.cursor() as cursor:
         cursor.execute(select_query)
@@ -31,13 +31,22 @@ def api_book(request):
 ##############################################333
 
 
-def api_review(request):
+def show_reviews(request):
     select_query = "SELECT * FROM books_review INNER JOIN books_book where books_review.book_id = books_book.id"
     #select_query = "SELECT book_id FROM books_review"
     with connection.cursor() as cursor:
         cursor.execute(select_query)
-        books = cursor.fetchall()
-    return JsonResponse({'books': books})
+        rows = cursor.fetchall()
+
+    # Convert the result into a list of dictionaries
+    columns = [col[0] for col in cursor.description]
+    review_list = [
+        dict(zip(columns, row))
+        for row in rows
+    ]
+
+    return JsonResponse({'reviews': review_list})
+
 
 def books_isbn(request, isbn_prefix):
     tbooks = Book.objects.all()
@@ -57,7 +66,7 @@ def books_isbn(request, isbn_prefix):
 #    return render(request, 'books/book_list.html', {'books': books_list, 'isbn_prefix': isbn_prefix})
     return JsonResponse({'books': books_list, 'isbn_prefix': isbn_prefix})
 
-def show_author(request):
+def show_authors(request):
     tbooks = Book.objects.all()
     select_query = "SELECT * FROM books_author"
     with connection.cursor() as cursor:
@@ -95,10 +104,10 @@ def delete_author(request):
     return JsonResponse({'books': books_list})
 
 def add_book(request):
-    select_query = "INSERT INTO books_book (title, isbn, publication_date, summary, author_id) VALUES (%s, %s, %s, %s, %s)"
+    select_query = "INSERT INTO books_book (title, isbn, publication_date, summary, author_id, content) VALUES (%s, %s, %s, %s, %s, %s)"
 
     # Define the values to be inserted
-    values = ('dummy title 6', '117777', '1988-02-03', 'This is a fake summary 6', 1)
+    values = ('If you build it', '2134680', '1992-02-03', 'This is a fake summary 9', 2, "This is the story text about distances.")
 
     try:
         with connection.cursor() as cursor:
@@ -120,9 +129,62 @@ def add_book(request):
         # Ensuring the connection is closed properly (optional with `with` statement)
         connection.close()        
 
+def add_review(request):
+    select_query = "INSERT INTO books_review (book_id, reviewer_name, review_text, rating, review_date) VALUES (%s, %s, %s, %s, %s)"
+
+    # Define the values to be inserted
+    values = (5, 'Charles Dickens', 'too technical', '1', '2024-06-15')
+
+    try:
+        with connection.cursor() as cursor:
+            cursor.execute(select_query, values)
+            # Fetch the number of rows affected
+
+            # Return a success message
+            return JsonResponse({'success': True, 'message': 'Insert successful'})
+
+    except IntegrityError as e:
+        # Handle any integrity errors, such as duplicate entries
+        return JsonResponse({'success': False, 'message': str(e)})
+
+    except Exception as e:
+        # Handle other exceptions
+        return JsonResponse({'success': False, 'message': str(e)})
+
+    finally:
+        # Ensuring the connection is closed properly (optional with `with` statement)
+        connection.close()        
+
+def add_author(request):
+    select_query = "INSERT INTO books_author (name, biography) VALUES (%s, %s)"
+
+    # Define the values to be inserted
+    values = ("Ted Glendale", "bio 3")
+
+    try:
+        with connection.cursor() as cursor:
+            cursor.execute(select_query, values)
+            # Fetch the number of rows affected
+
+            # Return a success message
+            return JsonResponse({'success': True, 'message': 'Insert successful'})
+
+    except IntegrityError as e:
+        # Handle any integrity errors, such as duplicate entries
+        return JsonResponse({'success': False, 'message': str(e)})
+
+    except Exception as e:
+        # Handle other exceptions
+        return JsonResponse({'success': False, 'message': str(e)})
+
+    finally:
+        # Ensuring the connection is closed properly (optional with `with` statement)
+        connection.close()        
+
+
 def update_book_title(request):
-    book_id = 3
-    new_title = 'Chopped Down'
+    book_id = 11
+    new_title = 'Travelling Across the Country'
 
     # Ensure both parameters are provided
     if not book_id or not new_title:
