@@ -28,9 +28,6 @@ def show_books(request):
 
     return JsonResponse({'books': books_list})
 
-##############################################333
-
-
 def show_reviews(request):
     select_query = "SELECT * FROM books_review INNER JOIN books_book where books_review.book_id = books_book.id"
     #select_query = "SELECT book_id FROM books_review"
@@ -75,15 +72,49 @@ def show_authors(request):
 
     # Convert the result into a list of dictionaries
     columns = [col[0] for col in cursor.description]
-    books_list = [
+    author_list = [
         dict(zip(columns, row))
         for row in rows
     ]
 
 #    return JsonResponse(books_list, safe=False)
 #    return render(request, 'books/book_list.html', {'books': books_list, 'isbn_prefix': isbn_prefix})
-    return JsonResponse({'books': books_list})
+    return JsonResponse({'authors': author_list})
 
+def show_authors_fname(request):
+    select_query = "SELECT CASE " \
+                           " WHEN INSTR(name, ' ') = 0 THEN name " \
+                           " ELSE SUBSTR(name, 1, INSTR(name, ' ') - 1) " \
+                       " END AS parsed_fname " \
+                    " FROM books_author"
+
+    with connection.cursor() as cursor:
+        cursor.execute(select_query)
+        rows = cursor.fetchall()
+
+    # Convert the result into a list of dictionaries
+    columns = [col[0] for col in cursor.description]
+    author_list = [
+        dict(zip(columns, row))
+        for row in rows
+    ]
+
+    return JsonResponse({'author': author_list})
+
+def show_authors_lname(request):
+    select_query = "SELECT substr(name, instr(name, ' ') + 1) AS parsed_lanme FROM books_author"
+    with connection.cursor() as cursor:
+        cursor.execute(select_query)
+        rows = cursor.fetchall()
+
+    # Convert the result into a list of dictionaries
+    columns = [col[0] for col in cursor.description]
+    author_list = [
+        dict(zip(columns, row))
+        for row in rows
+    ]
+
+    return JsonResponse({'author': author_list})
 
 def delete_author(request):
     tbooks = Book.objects.all()
@@ -204,3 +235,49 @@ def update_book_title(request):
         return JsonResponse({'success': True, 'rows_updated': rows_affected})
     else:
         return JsonResponse({'success': False, 'message': 'No rows were updated.'})
+
+def update_authors_name(request):
+    # Write your SQL query
+    sql_queryX = "UPDATE books_author " \
+                    " SET firstname = '', "\
+                    "     lastname = '' "\
+                    " WHERE name LIKE '% %' " \
+
+    sql_query = "UPDATE books_author " \
+                    " SET firstname = substr(name, 1, instr(name, ' ') - 1), "\
+                    "     lastname = substr(name, instr(name, ' ') + 1) "\
+                    " WHERE name LIKE '% %' " \
+
+    # Ensure both parameters are provided
+    if not sql_query:
+        return HttpResponseBadRequest("Missing sql query")
+
+    # Perform raw SQL update
+    with connection.cursor() as cursor:
+        # Execute the query
+        cursor.execute(sql_query)
+        # Fetch the number of rows affected
+        rows_affected = cursor.rowcount
+
+    # Check if any row was updated
+    if rows_affected > 0:
+        return JsonResponse({'success': True, 'rows_updated': rows_affected})
+    else:
+        return JsonResponse({'success': False, 'message': 'No rows were updated.'})
+
+def show_authors_lname(request):
+    select_query = "SELECT substr(name, instr(name, ' ') + 1) AS parsed_lanme FROM books_author"
+    with connection.cursor() as cursor:
+        cursor.execute(select_query)
+        rows = cursor.fetchall()
+
+    # Convert the result into a list of dictionaries
+    columns = [col[0] for col in cursor.description]
+    author_list = [
+        dict(zip(columns, row))
+        for row in rows
+    ]
+
+    return JsonResponse({'author': author_list})
+
+

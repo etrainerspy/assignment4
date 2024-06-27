@@ -1,9 +1,18 @@
 from django.db import models
+from django.core.validators import MinValueValidator, MaxValueValidator
+from datetime import datetime
 
 class Author(models.Model):
-    name = models.CharField(max_length=100)
+    firstname = models.CharField(max_length=50, null=True)
+    lastname = models.CharField(max_length=50, null=True)
     biography = models.TextField()
-
+    birth_year = models.IntegerField(
+        validators=[
+            MinValueValidator(1900),
+            MaxValueValidator(datetime.now().year)
+        ],
+        default=2000
+    )
     def __str__(self):
         return self.name
 

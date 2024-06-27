@@ -28,11 +28,14 @@ urlpatterns = [
     path('show/books/', views.show_books, name='show_books'),
     path('show/reviews/', views.show_reviews, name='show_reviews'),    
     path('show/authors/', views.show_authors, name='show_authors'),    
+    path('show/authors/fname', views.show_authors_fname, name='show_authors_fname'),    
+    path('show/authors/lname', views.show_authors_lname, name='show_authors_lname'),    
     path('delete/author/', views.delete_author, name='delete_author'),    
     path('add/book/', views.add_book, name='add_book'),    
     path('add/author/', views.add_author, name='add_author'),    
     path('add/review/', views.add_review, name='add_review'),
     path('update/book/title', views.update_book_title, name='update_book_title'),    
+    path('update/authors/name', views.update_authors_name, name='update_authors_name'),        
 ]
 
 
